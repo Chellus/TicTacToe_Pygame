@@ -1,10 +1,10 @@
-#TicTacToe_Pygame
+# TicTacToe_Pygame
 
-##Description
+## Description
 
-TODO
+This is a tic-tac-toe clone made with the Pygame library.
 
-##How to install the project
+## How to install the project
 
 TODO
 
