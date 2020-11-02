@@ -12,6 +12,9 @@ black = (0, 0, 0)
 red = (255, 0, 0)
 blue = (0, 0, 255)
 
+# fonts
+end_font = pygame.font.Font('freesansbold.ttf', 120)
+
 # create the window and the clock
 window = pygame.display.set_mode((window_w, window_h))
 clock = pygame.time.Clock()
@@ -31,6 +34,48 @@ pygame.display.set_caption("TicTacToe - Pygame")
 def game_quit():
     pygame.quit()
     quit()
+
+# this function returns 0 if there's no winner yet, 1 if the winner is the X and 2 if the winner is the O
+def check_winner():
+    global board
+
+    # check for every row
+    for i in range(3):
+        if board[i][0] == board[i][1] and board[i][1] == board[i][2]:
+            if board[i][0] != 0:
+                return board[i][0]
+
+    # check for every column
+    for j in range(3):
+        if board[0][j] == board[1][j] and board[1][j] == board[2][j]:
+            if board[0][j] != 0:
+                return board[0][j]
+
+    # check left-to-right diagonal
+    if board[0][0] == board[1][1] and board[1][1] == board[2][2]:
+        if board[0][0] != 0:
+            return board[0][0]
+
+    # check right-to-left diagonal
+    if board[0][2] == board[1][1] and board[1][1] == board[2][0]:
+        if board[0][2] != 0:
+            return board[0][2]
+
+    return 0
+
+def check_draw():
+    global board
+    counter = 0
+
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] != 0:
+                counter += 1
+
+    if counter == 9:
+        return True
+    return False
+
 
 #function to draw the board onto the window
 def draw_board():
@@ -82,6 +127,71 @@ def game_loop():
                                 turn = 1
 
         draw_board()
+
+        if check_winner() == 1:
+            running = False
+            winner = True
+
+            while winner:
+                window.fill(white)
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        winner = False
+                        break
+
+                textSurface = end_font.render('X wins!', True, black)
+                textRect = textSurface.get_rect()
+                textRect.center = ((window_w / 2), (window_h / 2))
+                window.blit(textSurface, textRect)
+                pygame.display.update()
+                clock.tick(15)
+
+            break
+
+
+        elif check_winner() == 2:
+            running = False
+            winner = True
+
+            while winner:
+                window.fill(white)
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        winner = False
+                        break
+
+                textSurface = end_font.render('O wins!', True, black)
+                textRect = textSurface.get_rect()
+                textRect.center = ((window_w / 2), (window_h / 2))
+                window.blit(textSurface, textRect)
+                pygame.display.update()
+                clock.tick(15)
+
+            break
+
+        if check_draw():
+            running = False
+            tie = True
+
+            while tie:
+                window.fill(white)
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        tie = False
+                        break
+
+                textSurface = end_font.render('Tie :(', True, black)
+                textRect = textSurface.get_rect()
+                textRect.center = ((window_w / 2), (window_h / 2))
+                window.blit(textSurface, textRect)
+                pygame.display.update()
+                clock.tick(15)
+
+            break
+
 
         pygame.display.update()
         clock.tick(30)
