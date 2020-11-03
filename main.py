@@ -1,4 +1,5 @@
 import pygame
+import time
 
 pygame.init()
 
@@ -7,10 +8,13 @@ window_w = 600
 window_h = 600
 
 # colors
-white = (255, 255, 255)
 black = (0, 0, 0)
-red = (255, 0, 0)
+bright_red = (255, 0, 0)
+bright_green = (0, 255, 0)
+red = (200, 0, 0)
+green = (0, 200, 0)
 blue = (0, 0, 255)
+white = (255, 255, 255)
 
 # fonts
 end_font = pygame.font.Font('freesansbold.ttf', 120)
@@ -89,10 +93,33 @@ def draw_board():
             elif board[x // 200][y // 200] == 2:
                 pygame.draw.circle(window, blue, (x + 100, y + 100), 75, 5)
 
+# button function
+def button(msg, font_size, x, y, w, h, ac, ic, action=None):
+    mouse = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
+    pressed = False
+
+    if x + w > mouse[0] > x and y + h > mouse[1] > y:
+        pygame.draw.rect(window, ac, (x, y, w, h))
+
+        if click[0] == 1 and action != None:
+            action()
+            pressed = True
+    else:
+        pygame.draw.rect(window, ic, (x, y, w, h))
+
+    smallText = pygame.font.Font('freesansbold.ttf', font_size)
+    textSurf = smallText.render(msg, True, black)
+    textRect = textSurf.get_rect()
+    textRect.center = ((x + (w / 2)), (y + (h / 2)))
+    window.blit(textSurf, textRect)
+    return pressed
+
 # main game loop
 def game_loop():
     running = True
     global turn
+    time.sleep(1)
     while running:
 
         window.fill(white)
@@ -100,7 +127,7 @@ def game_loop():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-                break
+                game_quit()
 
         # tic-tac-toe grid
         pygame.draw.line(window, black, (200, 0), (200, 600), 10)
@@ -181,7 +208,7 @@ def game_loop():
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         tie = False
-                        break
+                        game_quit()
 
                 textSurface = end_font.render('Tie :(', True, black)
                 textRect = textSurface.get_rect()
@@ -196,9 +223,31 @@ def game_loop():
         pygame.display.update()
         clock.tick(30)
 
+# start menu function
+def intro():
+    intro = True
+
+    while intro:
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                intro = False
+                game_quit()
+
+        window.fill(white)
+        largeText = pygame.font.Font('freesansbold.ttf', 80)
+        textSurf = largeText.render('Tic-Tac-Toe!', True, black)
+        textRect = textSurf.get_rect()
+        textRect.center = ((window_w / 2), (window_h / 3))
+        window.blit(textSurf, textRect)
+
+        if button('Play!', 30, 75, 400, 200, 100, green, bright_green, game_loop):
+            intro = False
+        if button('Quit', 30, 325, 400, 200, 100, red, bright_red, game_quit):
+            intro = False
+        pygame.display.update()
+        clock.tick(30)
+
 
 if __name__ == "__main__":
-    # start the game loop
-    game_loop()
-    # after the game loop is finished, quit the game
-    game_quit()
+    intro()
