@@ -18,6 +18,11 @@ white = (255, 255, 255)
 
 # fonts
 end_font = pygame.font.Font('freesansbold.ttf', 120)
+score_font = pygame.font.Font('freesansbold.ttf', 30)
+
+# score
+scoreX = 0
+scoreO = 0
 
 # create the window and the clock
 window = pygame.display.set_mode((window_w, window_h))
@@ -38,6 +43,13 @@ pygame.display.set_caption("TicTacToe - Pygame")
 def game_quit():
     pygame.quit()
     quit()
+
+# this function is to show the score of the players
+def show_score(x, y):
+    score_x = score_font.render("X score: " + str(scoreX), True, black)
+    score_o = score_font.render("O score: " + str(scoreO), True, black)
+    window.blit(score_x, (x, y))
+    window.blit(score_o, (x, y + 50))
 
 # this function returns 0 if there's no winner yet, 1 if the winner is the X and 2 if the winner is the O
 def check_winner():
@@ -117,9 +129,14 @@ def button(msg, font_size, x, y, w, h, ac, ic, action=None):
 
 # main game loop
 def game_loop():
-    running = True
     global turn
+    global scoreX
+    global scoreO
+
+    running = True
+
     time.sleep(1)
+
     while running:
 
         window.fill(white)
@@ -158,6 +175,7 @@ def game_loop():
         if check_winner() == 1:
             running = False
             winner = True
+            scoreX += 1
 
             while winner:
                 window.fill(white)
@@ -165,12 +183,18 @@ def game_loop():
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         winner = False
-                        break
+                        game_quit()
 
                 textSurface = end_font.render('X wins!', True, black)
                 textRect = textSurface.get_rect()
-                textRect.center = ((window_w / 2), (window_h / 2))
+                textRect.center = ((window_w / 2), (window_h / 2) - 100)
                 window.blit(textSurface, textRect)
+
+                show_score(100, 300)
+
+                button('Play again', 30, 75, 400, 200, 100, green, bright_green, restart)
+                button('Quit', 30, 325, 400, 200, 100, red, bright_red, game_quit)
+
                 pygame.display.update()
                 clock.tick(15)
 
@@ -180,6 +204,7 @@ def game_loop():
         elif check_winner() == 2:
             running = False
             winner = True
+            scoreO += 1
 
             while winner:
                 window.fill(white)
@@ -187,12 +212,18 @@ def game_loop():
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         winner = False
-                        break
+                        game_quit()
 
                 textSurface = end_font.render('O wins!', True, black)
                 textRect = textSurface.get_rect()
-                textRect.center = ((window_w / 2), (window_h / 2))
+                textRect.center = ((window_w / 2), (window_h / 2) - 100)
                 window.blit(textSurface, textRect)
+
+                show_score(100, 300)
+
+                button('Play again', 30, 75, 400, 200, 100, green, bright_green, restart)
+                button('Quit', 30, 325, 400, 200, 100, red, bright_red, game_quit)
+
                 pygame.display.update()
                 clock.tick(15)
 
@@ -212,8 +243,14 @@ def game_loop():
 
                 textSurface = end_font.render('Tie :(', True, black)
                 textRect = textSurface.get_rect()
-                textRect.center = ((window_w / 2), (window_h / 2))
+                textRect.center = ((window_w / 2), (window_h / 2) - 100)
                 window.blit(textSurface, textRect)
+
+                show_score(100, 300)
+
+                button('Play again', 30, 75, 400, 200, 100, green, bright_green, restart)
+                button('Quit', 30, 325, 400, 200, 100, red, bright_red, game_quit)
+
                 pygame.display.update()
                 clock.tick(15)
 
@@ -222,6 +259,16 @@ def game_loop():
 
         pygame.display.update()
         clock.tick(30)
+
+# restart game function
+def restart():
+    global board
+    global turn
+    turn = 1
+    board = [[0, 0, 0],
+             [0, 0, 0],
+             [0, 0, 0]]
+    game_loop()
 
 # start menu function
 def intro():
